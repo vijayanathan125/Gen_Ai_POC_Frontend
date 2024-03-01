@@ -28,7 +28,7 @@ const DocumentUpload = () => {
 
       try {
         const response = await fetch(
-          "https://localhost:7238/api/documents/upload",
+          "https://localhost:7003/api/documents/upload",
           {
             method: "POST",
             body: formData,
@@ -58,7 +58,7 @@ const DocumentUpload = () => {
 
   const fetchDocumentList = async () => {
     try {
-      const response = await fetch("https://localhost:7238/api/documents/list");
+      const response = await fetch("https://localhost:7003/api/documents/list");
 
       if (response.ok) {
         const documents = await response.json();
@@ -105,7 +105,7 @@ const DocumentUpload = () => {
   const deleteDocument = async (index, fileName) => {
     try {
       const response = await fetch(
-        `https://localhost:7238/api/documents/delete/${fileName}`,
+        `https://localhost:7003/api/documents/delete/${fileName}`,
         {
           method: "DELETE",
         }

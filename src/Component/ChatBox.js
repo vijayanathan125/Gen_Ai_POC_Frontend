@@ -1,189 +1,31 @@
-// // ChatApp.js
-
-// import React, { useState } from "react";
-// //import DocumentUpload from "./DocumentUpload";
-// import "./ChatBox.css";
-// import SendIcon from "@mui/icons-material/Send";
-// import axios from "axios";
-// import SideNav from "./SideNav";
-
-// const ChatBox = () => {
-//   const [messages, setMessages] = useState([]);
-//   const [input, setInput] = useState("");
-//   // const [uploadedDocuments, setUploadedDocuments] = useState([]);
-
-//   const handleInputChange = (e) => {
-//     setInput(e.target.value);
-//   };
-
-//   const handleSendMessage = () => {
-//     if (input.trim() === "") return;
-
-//     const userMessage = {
-//       text: "User Message",
-//       type: "system",
-//     };
-
-//     setMessages([...messages, userMessage]);
-//     setInput("");
-
-//     // TODO: Send input to your backend for document search and receive the response
-//     // const searchResult = callYourSearchAPI(input);
-
-//     // For the sake of this example, let's simulate a response
-//     const systemResponse = {
-//       text: "Your search result goes here...",
-//       type: "system",
-//     };
-
-//     setMessages([...messages, systemResponse]);
-//   };
-
-//   // const handleSendMessage = async () => {
-//   //   if (input.trim() === "") return;
-
-//   //   // Send input to the Flask API
-//   //   try {
-//   //     const response = await axios.post("http://localhost:5000/process_query", {
-//   //       user_query: input,
-//   //     });
-
-//   //     const systemResponse = {
-//   //       text: response.data.output_result,
-//   //       type: "system",
-//   //     };
-
-//   //     console.log(systemResponse);
-
-//   //     setMessages([...messages, systemResponse]);
-//   //     setInput("");
-//   //   } catch (error) {
-//   //     console.error("Error sending message:", error);
-//   //   }
-//   // };
-
-//   //   const handleDocumentUpload = (document) => {
-//   //     setUploadedDocuments([...uploadedDocuments, document]);
-//   //   };
-
-//   return (
-//     <div className="chatbox-container">
-//       <div className="side-nav-left">
-//         <SideNav></SideNav>
-//       </div>
-//       <div className="chat-container">
-//         <div className="chat-history">
-//           {messages.map((message, index) => (
-//             <div key={index} className={`message ${message.type}`}>
-//               {message.text}
-//             </div>
-//           ))}
-//         </div>
-//         <div className="chat-input">
-//           <input
-//             type="text"
-//             placeholder="Type your query..."
-//             value={input}
-//             onChange={handleInputChange}
-//           />
-//           <button onClick={handleSendMessage}>
-//             <SendIcon />
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ChatBox;
-
-//////////////////////////////////////////////
-/////////////////////////////////////////////
-/////////////////////////////////////////////
-
-// import React, { useState } from "react";
-// import "./ChatBox.css";
-// import SendIcon from "@mui/icons-material/Send";
-// import Navbar from "./Navbar";
-// //import SideNav from "./SideNav";
-// // import { Link, useNavigate, useLocation } from "react-router-dom";
-
-// const ChatBox = ({ isAdmin }) => {
-//   //const location = useLocation();
-//   const [messages, setMessages] = useState([]);
-//   const [input, setInput] = useState("");
-
-//   const handleInputChange = (e) => {
-//     setInput(e.target.value);
-//   };
-
-//   const handleSendMessage = () => {
-//     if (input.trim() === "") return;
-
-//     const userMessage = {
-//       text: "User Message",
-//       type: "user",
-//     };
-
-//     setMessages([...messages, userMessage]);
-//     setInput("");
-
-//     // TODO: Send input to your backend for document search and receive the response
-//     // const searchResult = callYourSearchAPI(input);
-
-//     // For the sake of this example, let's simulate a response
-//     const systemResponse = {
-//       text: "Your search result goes here...",
-//       type: "user",
-//     };
-
-//     setMessages([...messages, systemResponse]);
-//   };
-
-//   return (
-//     <div className="chatbox-container">
-//       <div className="side-nav-left">
-//         <Navbar />
-//       </div>
-//       <div className="chat-container">
-//         <div className="chat-history">
-//           {messages.map((message, index) => (
-//             <div key={index} className={`message ${message.type}`}>
-//               {message.text}
-//             </div>
-//           ))}
-//         </div>
-//         <div className="chat-input">
-//           <input
-//             type="text"
-//             placeholder="Type your query..."
-//             value={input}
-//             onChange={handleInputChange}
-//           />
-//           <button className="send" onClick={handleSendMessage}>
-//             <SendIcon />
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ChatBox;
-///////////////////////////////////////////////////
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./ChatBox.css";
 import SendIcon from "@mui/icons-material/Send";
 import Navbar from "./Navbar";
-
+import { FaRobot } from "react-icons/fa";
+import { FaUserNinja } from "react-icons/fa6";
 const ChatBox = ({ isAdmin }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const chatHistoryRef = useRef(null);
+  const lastMessageRef = useRef(null);
+
+  useEffect(() => {
+    // Scroll to the last message when messages change
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    // Display the default assistant message when the component mounts
+    const defaultAssistantMessage = {
+      text: "I'm a Document Search Bot, and I'm here to help you to provide information for your queries. Ask me anything relevant to the content that you've provided! 🤖✨",
+      type: "assistant",
+    };
+    setMessages([defaultAssistantMessage]);
+  }, []); // Empty dependency array ensures the effect runs only once on mount
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -219,17 +61,35 @@ const ChatBox = ({ isAdmin }) => {
       }
 
       const result = await response.json();
+      // Check if the response content is "No Content Found"
+      if (result.content === "No Content Found") {
+        // Display a specific message for irrelevant questions
+        const irrelevantMessage = {
+          text: "As of my knowledge, your question is irrelevant to the content I have. I can't provide information. Please ask a relevant question. 🤔🚫",
+          type: "assistant",
+        };
+        setMessages((prevMessages) => [...prevMessages, irrelevantMessage]);
+      } else {
+        // Store the assistant content in state for other cases
+        const newAssistantMessage = { text: result.content, type: "assistant" };
+        setMessages((prevMessages) => [...prevMessages, newAssistantMessage]);
+      }
 
       // Store the assistant content in state
-      const newAssistantMessage = { text: result.content, type: "assistant" };
-      setMessages((prevMessages) => [...prevMessages, newAssistantMessage]);
+      // const newAssistantMessage = { text: result.content, type: "assistant" };
+      // setMessages((prevMessages) => [...prevMessages, newAssistantMessage]);
     } catch (error) {
       console.error("Error in API request:", error);
+      // Display error message as an assistant-generated message
+      const errorMessage = {
+        text: "Oops! 😟 We ran into a problem. Please try again later.",
+        type: "assistant",
+      };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
       // Set loading back to false after API call completes
       setLoading(false);
     }
-    chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
 
     // setInput("");
   };
@@ -246,24 +106,38 @@ const ChatBox = ({ isAdmin }) => {
       <div className="side-nav-left">
         <Navbar />
       </div>
-      <div ref={chatHistoryRef} className="chat-container">
+      <div className="chat-container" ref={chatHistoryRef}>
         <div className="chat-history">
           {messages.map((message, index) => (
-            <div key={index} className={`message ${message.type}`}>
+            // <div key={index} className={`message ${message.type}`}>
+            <div
+              key={index}
+              ref={index === messages.length - 1 ? lastMessageRef : null}
+              className={`message ${message.type}`}
+            >
+              {message.type === "assistant" && (
+                <FaRobot fontSize="small" style={{ marginRight: "5px" }} />
+              )}
+
               {message.text}
+              {message.type === "user" && (
+                <FaUserNinja fontSize="small" style={{ marginRight: "5px" }} />
+              )}
             </div>
           ))}
           {/* {loading && <div className="message system">Loading... </div>} */}
           {loading && (
             <div className="message system">
-              {Array.from("Loading...").map((letter, index) => (
-                <span
-                  key={index}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  className="wave"
-                >
-                  {letter}
-                </span>
+              {Array.from("........").map((letter, index) => (
+                <strong key={index}>
+                  <span
+                    key={index}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    className="wave"
+                  >
+                    {letter}
+                  </span>
+                </strong>
               ))}
               <style>
                 {`
